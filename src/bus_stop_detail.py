@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-from .bus_stop_detail import BusStopDetail
+from .bus_stop_data_line import BusStopDataLine
 
 # {
 #     "node": "1",
@@ -19,14 +19,15 @@ from .bus_stop_detail import BusStopDetail
 # },
 
 @dataclass
-class BusStop:
+class BusStopDetail:
     stop_id : int
+    name : str
+    postal_address : str
     coordinate_x : float
     coordinate_y : float
-    wifi : bool
-    line_ids : List[str]
-    name : str
-    bus_stop_detail : BusStopDetail = None
+    pmv : int
+    data_lines : List[BusStopDataLine]
 
     def __str__(self):
-        return f"Node:{self.stop_id}\tcoordinates:({self.coordinate_x:.4f},{self.coordinate_y:.4f})\twifi:{self.wifi}\tlines:{self.line_ids}\tname:{self.name}\nbus_stop_detail:{self.bus_stop_detail}"
+        return (f"StopId:{self.stop_id}\tName:{self.name}\tPostalAddress:{self.postal_address}\tCoordinates:({self.coordinate_x:.4f},{self.coordinate_y:.4f})\tPMV:{self.pmv}\nLines:\n" + 
+                "\n".join(str(data_line) for data_line in self.data_lines))
