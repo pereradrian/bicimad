@@ -59,6 +59,13 @@ TRANSPORT_BUSEMTMAD_LINES_TIMETABLE = "transport/busemtmad/lines/{lineId}/timeta
 TRANSPORT_BUSEMTMAD_LINES_TRIPS = "transport/busemtmad/lines/{lineId}/trips/{dateRef}/"
 TRANSPORT_BUSEMTMAD_TRAVELPLAN = "transport/busemtmad/travelplan/"
 
+## BICIMAD
+TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES = "transport/bicimadgo/bikes/availability/"
+TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES_BIKE_ID = "transport/bicimadgo/bikes/availability/{bikeId}/"
+TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES_AROUND_XY = "transport/bicimadgo/bikes/availability/arroundxy/{longitude}/{latitude}/{radius}/"
+TRANSPORT_BICIMAD_LIST_BICIMAD_STATIONS = "transport/bicimad/stations/{idStation}/"
+
+
 ALL_TRANSPORT_METHODS = {
     TRANSPORT_BUSEMTMAD_STOPS_DETAIL : lambda bicimad: bicimad.default_method,
     TRANSPORT_BUSEMTMAD_STOPS_AROUNDSTOP : lambda bicimad: bicimad.default_method,
@@ -76,6 +83,8 @@ ALL_TRANSPORT_METHODS = {
     TRANSPORT_BUSEMTMAD_LINES_TIMETABLE : lambda bicimad: bicimad.default_method,
     TRANSPORT_BUSEMTMAD_LINES_TRIPS : lambda bicimad: bicimad.default_method,
     TRANSPORT_BUSEMTMAD_TRAVELPLAN : lambda bicimad: bicimad.default_method,
+
+    TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES : lambda bicimad: bicimad.default_method, 
 }
 
 
@@ -410,6 +419,39 @@ class BiciMAD:
     # TRANSPORT_BUSEMTMAD_TRAVELPLAN : lambda bicimad: bicimad.default_method(),
     def transport_busemtmad_travel_plan(self, debug=False):
         raise ValueError("Not implemented")
+
+    ##########################################################################
+    ##########################################################################
+    ##########################################################################
+    ### BICIMAD
+    ##########################################################################
+    ##########################################################################
+    ##########################################################################
+    # TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES : lambda bicimad: bicimad.default_method(),
+    def transport_bicimad_bikes_go_availables(self, bike_id=None, longitude=None, latitude=None, radius=None, debug=False):
+        # /arroundxy/longitude/latitude/radius/ bikes arround Point
+        if bike_id is not None:
+            url = self.__format_url__(TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES_BIKE_ID.format(bikeId=bike_id))
+        elif longitude is not None:
+            url = self.__format_url__(TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES_AROUND_XY.format(longitude=longitude, latitude=latitude, radius=radius))
+        else:
+            url = self.__format_url__(TRANSPORT_BICIMAD_BIKES_GO_AVAILABLES)
+        response = self.__get_request__(url, headers={}, debug=debug)
+        if validate_response(response):
+            data = extract_data(response)
+            return data
+        else:
+            return None
+    
+    # TRANSPORT_BICIMAD_LIST_BICIMAD_STATIONS
+    def transport_bicimad_list_bicimad_stations(self, station_id : int, debug=False):
+        url = self.__format_url__(TRANSPORT_BICIMAD_LIST_BICIMAD_STATIONS.format(idStation=station_id))
+        response = self.__get_request__(url, headers={}, debug=debug)
+        if validate_response(response):
+            data = extract_data(response)
+            return data
+        else:
+            return None
 
 def convert_to_infoline_general(infoline):
     line_id = infoline[INFOLINE_LINE_ID_KEY]
